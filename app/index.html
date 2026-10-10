@@ -461,8 +461,11 @@ function vScore(v){const n=(v.name+" "+(v.voiceURI||"")).toLowerCase();let sc=0;
   if(/novelty|eloquence|bad news|bells|boing|bubbles|cellos|whisper|zarvox|trinoids|organ|jester|superstar|albert|fred|junior|ralph|grandma|grandpa|rocko|shelley|reed|sandy|flo|eddy|wobble|good news|hysterical|pipe|deranged/i.test(n))sc-=20;
   return sc}
 function enVoices(){try{return speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)||a.name.localeCompare(b.name))}catch(e){return[]}}
-function pickVoice(){try{const vs=enVoices();voice=(S.voice&&vs.find(v=>v.name===S.voice))||vs[0]||null;if(S.tab==="stats"&&typeof render==="function")render()}catch(e){}}
-if(TTS){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+const vKey=v=>v.voiceURI||v.name;
+function findV(vs,k){return k?(vs.find(v=>vKey(v)===k)||vs.find(v=>v.name===k)||null):null}
+function vQual(v){const u=(v.voiceURI||"").toLowerCase();return /premium/.test(u)?"プレミアム":/enhanced/.test(u)?"拡張":/compact/.test(u)?"簡易":""}
+function pickVoice(){try{const vs=enVoices();voice=findV(vs,S.voice)||vs[0]||null;if(S.tab==="stats"&&typeof render==="function")render()}catch(e){}}
+if(TTS){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}[300,1000,2500].forEach(ms=>setTimeout(pickVoice,ms))}
 function speak(text,slow,btn){
   if(!TTS)return;
   try{
@@ -541,15 +544,15 @@ function reviewWrongView(){
 function voiceView(){
   if(!TTS)return `<p class="sec">音声の設定</p><div class="concept"><p class="exp" style="margin:0">この端末では読み上げ機能が使えません。</p></div>`;
   const vs=enVoices().filter(v=>vScore(v)>-5),best=vs[0],good=vs.filter(v=>vScore(v)>=4);
-  const label=v=>`${v.name}（${v.lang}）${vScore(v)>=4?" ★高品質":vScore(v)<=0?" ・標準":""}`;
+  const label=v=>`${v.name}${vQual(v)?"・"+vQual(v):""}（${v.lang}）${vScore(v)>=4?" ★高品質":vScore(v)<=0?" ・標準":""}`;
   return `<p class="sec">音声の設定</p><div class="concept" style="gap:10px">
-   ${vs.length?`<label class="vsel"><span>英語の声</span><select id="ttsvoice">${vs.map(v=>`<option value="${esc(v.name)}" ${voice&&voice.name===v.name?"selected":""}>${esc(label(v))}</option>`).join("")}</select></label>
+   ${vs.length?`<label class="vsel"><span>英語の声</span><select id="ttsvoice">${vs.map(v=>`<option value="${esc(vKey(v))}" ${voice&&vKey(voice)===vKey(v)?"selected":""}>${esc(label(v))}</option>`).join("")}</select></label>
    <div class="row"><button class="chipbtn" data-act="say" data-t="Got it. Let me check and get back to you right away.">▶ 試しに聞く</button></div>
-   <label class="vsel"><span>会話の男性の声</span><select id="ttsvM"><option value="">自動で選ぶ（${esc((autoSpk("M")||{}).name||"―")}）</option>${vs.map(v=>`<option value="${esc(v.name)}" ${S.vM===v.name?"selected":""}>${esc(label(v))}</option>`).join("")}</select></label>
-   <label class="vsel"><span>会話の女性の声</span><select id="ttsvW"><option value="">自動で選ぶ（${esc((autoSpk("W")||{}).name||"―")}）</option>${vs.map(v=>`<option value="${esc(v.name)}" ${S.vW===v.name?"selected":""}>${esc(label(v))}</option>`).join("")}</select></label>
+   <label class="vsel"><span>会話の男性の声</span><select id="ttsvM"><option value="">自動で選ぶ（${esc((autoSpk("M")||{}).name||"―")}）</option>${vs.map(v=>`<option value="${esc(vKey(v))}" ${S.vM&&vKey(findV(vs,S.vM)||{})===vKey(v)?"selected":""}>${esc(label(v))}</option>`).join("")}</select></label>
+   <label class="vsel"><span>会話の女性の声</span><select id="ttsvW"><option value="">自動で選ぶ（${esc((autoSpk("W")||{}).name||"―")}）</option>${vs.map(v=>`<option value="${esc(vKey(v))}" ${S.vW&&vKey(findV(vs,S.vW)||{})===vKey(v)?"selected":""}>${esc(label(v))}</option>`).join("")}</select></label>
    <div class="row"><button class="chipbtn" data-act="vtest" data-s="M">▶ 男性の声</button><button class="chipbtn" data-act="vtest" data-s="W">▶ 女性の声</button></div>`:`<p class="exp" style="margin:0">声の一覧を読み込み中です。</p>`}
    <p class="exp" style="margin:0">${good.length?`★の付いた声は、音のつながりや t の弾音化が自然です。いちばん良い声を自動で選んでいます。`:`高品質な英語の声が見つかりませんでした。下の手順で追加すると、音のつながりがぐっと自然になります。`}</p>
-   <div class="howto"><b>音が悪いときは</b><span>「標準」の声は機械的に聞こえます。★高品質の声を追加して選ぶと、ぐっと自然になります。</span><b>iPhone で高品質な声を追加する</b><span>設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語 → 「Ava（プレミアム）」などをダウンロード</span><b>Android</b><span>設定 → 一般管理（システム）→ テキスト読み上げ → Google 音声認識・合成 → 英語（米国）の音声データをインストール</span><b>パソコン</b><span>Edge なら「Microsoft Ava / Andrew Online (Natural)」、Chrome なら「Google US English」がおすすめです。</span><span>追加したあと、このアプリを開き直すと一覧に出ます。</span></div>
+   <div class="howto"><b>音が悪いときは</b><span>「標準」の声は機械的に聞こえます。★高品質の声を追加して選ぶと、ぐっと自然になります。</span><b>iPhone で高品質な声を追加する</b><span>設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語 → 「Ava（プレミアム）」などをダウンロード</span><b>Android</b><span>設定 → 一般管理（システム）→ テキスト読み上げ → Google 音声認識・合成 → 英語（米国）の音声データをインストール</span><b>パソコン</b><span>Edge なら「Microsoft Ava / Andrew Online (Natural)」、Chrome なら「Google US English」がおすすめです。</span><span>追加したあと、このアプリを開き直すと一覧に出ます。iPhone のホーム画面から使っている場合は、アプリ切り替え画面で上にスワイプして完全に終了してから開いてください。一覧では「・プレミアム」「・拡張」と付いたものがダウンロードした声です（Siri の声はWebアプリからは使えません）。</span></div>
   </div>`;
 }
 
@@ -902,7 +905,7 @@ function autoSpk(s){const vs=goodVoices();if(!vs.length)return voice;
   const fem=vs.filter(v=>FEM.test(v.name)&&!MAL.test(v.name)),mal=vs.filter(v=>MAL.test(v.name)&&!FEM.test(v.name));
   if(s==="M")return mal[0]||voice;if(s==="W2")return fem[1]||fem[0]||voice;return fem[0]||voice}
 function spkVoice(s){if(s==="Y")return{v:voice,p:1};const vs=enVoices();
-  const pick=s==="M"?S.vM:S.vW;const u=pick&&vs.find(v=>v.name===pick);return{v:u||autoSpk(s),p:1}}
+  const pick=s==="M"?S.vM:S.vW;const u=findV(vs,pick);return{v:u||autoSpk(s),p:1}}
 function playLines(d,from,to){if(!TTS)return;try{speechSynthesis.cancel()}catch(e){}
   for(let i=from;i<=to;i++){const [s,en]=d.lines[i],sv=spkVoice(s);const u=new SpeechSynthesisUtterance(en);if(sv.v){u.voice=sv.v;u.lang=sv.v.lang}else u.lang="en-US";u.pitch=1;u.rate=S.rate||1;
     u.onstart=()=>{S.d.playing=i;hlLine()};if(i===to)u.onend=u.onerror=()=>{S.d.playing=-1;hlLine()};try{speechSynthesis.speak(u)}catch(e){}}}
