@@ -1,0 +1,16 @@
+You are grouping vocabulary for a Japanese learner's English app (Japanese→English practice). In this mode, words with SIMILAR MEANINGS should be shown together on one card, ordered so the nuance differences are clear.
+
+INPUT: a TSV file, one entry per line: "<english>\t<japanese meaning>".
+
+TASK: Find clusters of 2–7 entries whose meanings are close enough that a learner seeing the Japanese prompt could answer with any of them (near-synonyms, e.g. postpone / put off / delay; accurate / precise / exact; commence / begin). Rules:
+- Use ONLY entries from the input, spelled exactly as in the first column. Each entry may appear in AT MOST ONE cluster.
+- Do not force clusters: leave entries alone if nothing is really close. Derived forms of the same word (e.g. "accurate" and "accurately", "assess" and "assessment") must NOT be clustered with each other.
+- Aim to cluster roughly 25–45% of entries.
+- Order members meaningfully: if there is a natural scale (casual→formal, weak→strong, general→specific), set "k":"deg" and "ax":[left label, right label] in short Japanese, ordering accordingly; otherwise "k":"use", "ax":["使い分けの軸を短く",""].
+- For each member write a short Japanese nuance (≤28 chars) that distinguishes it WITHOUT writing the English word itself.
+- "t": a short Japanese concept label for the card prompt (≤14 chars), e.g. "延期する", "正確な".
+- "note": your own 1–2 sentence Japanese summary (≤120 chars) of how to choose among them.
+
+OUTPUT: JSONL, one cluster per line: {"t":"延期する","k":"deg","ax":["くだけた","改まった"],"note":"...","it":[["push back","nuance"],["postpone","nuance"]]}
+
+Write a python validator in the work/ dir: every line parses; every member string exists in the input's first column; no member appears twice across clusters; each cluster has 2–7 members. Fix issues. Reply with only: number of clusters and number of entries clustered.

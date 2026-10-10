@@ -1,0 +1,16 @@
+You are writing content for a Japanese learner's English "nuance ladder" app (user: a Japanese cardiologist/researcher; app is used on a smartphone). Each item is a Japanese expression with FOUR English equivalents ordered from casual to formal:
+ level 0 = カジュアル（友達・家族）, 1 = ふつう（日常会話）, 2 = 丁寧, 3 = フォーマル（ビジネス文書・公式の場）.
+
+Existing items (do NOT duplicate these Japanese meanings): see work/existing_phrases.tsv (export it from Q in app/index.html) (id \t jp).
+
+Write NEW items (the count and theme are given in your task) as JSONL, one item per line:
+{"id":"<short_ascii_snake_id, unique, not starting with w_ or p_ or i_>",
+ "jp":"<short natural Japanese, ≤14 chars>",
+ "scene":"<situation in Japanese, ≤20 chars>",
+ "a":[["<English level0>","<Japanese explanation ≤60 chars; wrap the key word(s) in <b>…</b>>"], ... 4 entries ...],
+ "ex":[["<example sentence using the level-N phrase, natural American English, ≤16 words>","<natural Japanese translation>"], ... 4 entries in the same order ...],
+ "link":[["<katakana approximation of how it actually sounds in fast natural speech (linking, flapping, dropped sounds)>","<short Japanese note on the sound change ≤40 chars>"], ... 4 ...],
+ "toeic":[false,false,true,true],   // true if that rung is typical of TOEIC business English
+ "us":[true,true,false,false]       // true if that rung is very common in everyday American conversation
+}
+Rules: all four rungs must really mean the Japanese in that scene; the casual→formal ordering must be genuine; each explanation should say how the nuance differs (who you'd say it to, how strong/soft). English must be grammatically perfect and natural. Examples and explanations must be your own original writing. Validate with python that each line parses, has exactly 4 entries in a/ex/link/toeic/us, ids are unique and not in existing.tsv. Reply with only the count and the list of jp.

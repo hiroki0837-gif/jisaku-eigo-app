@@ -1,0 +1,4 @@
+You are checking the WORD LIST of a Japanese learner's English app (user: Japanese cardiologist). Input TSV: id \t English headword/phrase \t Japanese meaning \t Japanese note (may be empty) \t the example sentence (for context only).
+Check: (1) the Japanese meaning is accurate for the headword (main sense(s) a learner needs; for medical-paper entries, the sense used in papers), natural Japanese, no mistranslation or wrong part of speech; (2) the note (if any) is factually and grammatically correct about English usage; (3) obvious typos in Japanese.
+Only flag real problems; do not rewrite acceptable entries for taste.
+Output ONLY lines needing changes as TSV: id \t corrected Japanese meaning (copy unchanged if fine) \t corrected note (copy unchanged; empty if there is no note) \t reason in Japanese (≤30 chars). No header. Validate ids exist and 4 columns. Reply only with: lines checked, number corrected, 3 examples.

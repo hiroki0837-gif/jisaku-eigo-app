@@ -1,0 +1,7 @@
+node_modules/
+dist/
+work/
+jisaku-eigo-offline.zip
+tests/offline_shot.png
+*.bak.html
+__pycache__/

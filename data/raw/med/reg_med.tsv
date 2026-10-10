@@ -1,0 +1,352 @@
+2-sided log-rank test	N
+account	N
+achieve	N
+address	F
+adverse event	N
+affect	N
+age-matched	N
+aid	N
+aim	N
+allow	N
+anonymize	N
+assess	N
+assist	N
+associate	N
+at any age	N
+attribute	F
+be accounted for	F
+be admitted to	N
+be attributable to	F
+be attributed to	F
+be candidate for	N
+be censored	N
+be followed-up	N
+be likely to	N
+be lost to follow-up	N
+be poorly documented	F
+be referred to	N
+be responsible for	N
+be well known	N
+beyond the scope	F
+cause	N
+comorbidity	N
+consensus	N
+contribute	N
+controversial	N
+Cox proportional hazards regression model	N
+Cox regression analysis	N
+Declaration of Helsinki	N
+definite diagnosis	N
+demonstrate	F
+describe	N
+develop	N
+discontinue	N
+discuss	N
+double-blind	N
+due to	N
+elucidate	F
+enable	N
+examine	N
+exert	F
+exhibit	F
+experience	N
+explain	N
+focus	N
+follow	N
+for a mean of	N
+for a median of	N
+give	N
+goal	N
+have good insight	N
+have poor insight	N
+help	N
+highlight	N
+histopathologically	N
+identify	N
+illustrate	N
+implicate	F
+importantly	F
+in accordance with	F
+in an effort to	F
+in clinical practice	N
+in one's stool	N
+include	N
+indicate	N
+induce	N
+inflammatory response	N
+informed consent	N
+involve	N
+It is a general belief that~	F
+It is conceivable that~	F
+It is our belief that~	F
+It is plausible that~	F
+It is very unlikely~	F
+lack	N
+lead	N
+lead to controversy	F
+lifetime risk	N
+likelihood	N
+median	N
+medical history	N
+morbidity	N
+mortality	N
+multiple linear regression analysis	N
+multivariate analysis	N
+objective response	N
+observational study	N
+observe	N
+occur	N
+Of particular interest is~	F
+Of particular note is~	F
+often overlooked is~	F
+outcome	N
+outline	N
+outpatient	N
+overall response rate	N
+placebo-controlled trial	N
+pose	F
+present	N
+prove	N
+provide	N
+purpose	N
+P-value	N
+randomized	N
+ranging in age from~to~	N
+refractory	N
+regardless of	N
+remain	N
+remain to be clarified	F
+resolve	N
+respond	N
+responsive	N
+result	N
+retrospectively	N
+reveal	N
+rule out	N
+secondary to the aging of the population	F
+seek	F
+serve	N
+show	N
+similar to	N
+single-center clinical trial	N
+stratify	N
+suffer	N
+suggest	N
+Taken all together	F
+Taken together	F
+the peak age at onset	N
+This may help explain why~	F
+to date	F
+to test this hypothesis	F
+to the best of our knowledge	F
+tolerability	N
+translate	F
+treat	N
+uncover	N
+undergo	N
+underlie	F
+underscore	F
+undertake	F
+uneventful	N
+univariate analysis	N
+unknown	N
+We report a case of~	F
+well tolerated	N
+whereas	F
+with a chief complaint of~	N
+with ages ranging from~to~	N
+with and without	N
+with literature reviews	F
+with some literature reviews	F
+with the aging of the population	F
+with the aging of the society	F
+with the rapid development of~	F
+with the rapid growth of~	F
+without any specific cause	N
+yield	F
+on a scale of 1 to 10	N
+be coded as 1 if	N
+in 21-day cycles	N
+at 2-week intervals	N
+2-week washout period	N
+P value	N
+who-does-what sentence structure	N
+clarify	N
+become evident	F
+cite	N
+manifest as	F
+opinions differ on	F
+abnormal proliferation	N
+lead to	N
+contribute to	N
+aid in	N
+there is no consensus on	F
+it is generally believed that	F
+genetic variant	N
+retrospectively review	N
+be suspected	N
+be supported by	N
+be affected by	N
+have an impact on	N
+there is limited evidence	F
+be obtained	N
+perform	N
+similar results were obtained	F
+initiate	F
+review	N
+improve	N
+remain unclear	F
+outpatient clinic	N
+by sex within each group	N
+definitive diagnosis	N
+test the hypothesis	N
+challenge	N
+remain a challenge	F
+may	N
+be more likely to	N
+be X times more likely to	N
+be feasible	N
+this is because	N
+may be attributable to	F
+relative pronoun	N
+patients were asked to	N
+there is growing interest in	F
+include in the differential diagnosis	N
+be involved in	N
+be associated with	N
+result from	N
+be at risk of	N
+function as	N
+ensure objectivity	F
+emphasize	N
+interestingly	F
+a matter of debate	F
+follow-up	N
+lost to follow-up	N
+censored	N
+be followed up	N
+favorable clinical course	N
+alleviate	F
+be consistent with	F
+in contrast	F
+of unknown etiology	F
+unexplained death	N
+few studies have	F
+attempt to validate	F
+effective	N
+exert an effect	F
+interindividual variability	N
+given that	F
+control group	N
+aged X to Y years	N
+have ... properties	N
+further studies are needed	F
+have been sporadically reported	F
+remain controversial	F
+therefore	F
+conduct	F
+account for	F
+multiple regression analysis	N
+be important	N
+chief complaint	N
+emerge	F
+uneventful postoperative course	N
+describe in detail	N
+bed rest	N
+focus on	N
+exclusion criteria	N
+exclude	N
+be diagnosed with	N
+be summarized in Figure	F
+further evaluation and treatment	N
+inclusion criteria	N
+potentiate	F
+respond to	N
+unexpected	N
+as a result	N
+the study population comprised	F
+manage	N
+multifactorial disease	N
+multivariable analysis	N
+single-center trial	N
+univariable analysis	N
+pay particular attention to	F
+it is noteworthy that	F
+attract attention	F
+be cured	N
+investigate	N
+treatment group	N
+be treated with	N
+regular outpatient visits	N
+present with	N
+data are limited	F
+be indicated for	N
+tailor	F
+be able to	N
+it is speculated that	F
+differ in that	F
+coordinating conjunction	N
+statistical significance	N
+gain insight into	F
+be enrolled	N
+be considered	N
+determine	N
+of particular interest is	F
+without any apparent trigger	F
+from causes unrelated to	F
+be accompanied by	F
+be difficult to treat	N
+hospitalization	N
+according to	N
+be presumably due to	F
+be well tolerated	N
+adjusted for age and sex	N
+regardless of age	N
+with suspected	N
+as a consequence of	F
+since	N
+matched in a 1:2 ratio	N
+underlying	N
+baseline characteristics	N
+during defecation	N
+be prone to	F
+incidence	N
+fever	N
+turn out to be	C
+evaluate	N
+have good insight into their illness	N
+histopathological examination revealed	F
+review of the literature	N
+participial construction	N
+perform an analysis	N
+mean	N
+comorbidities	N
+have rarely been reported	F
+report	N
+unique	N
+adjust for	N
+the aim of this study was to	F
+remain to be elucidated	F
+result in	N
+overlook	N
+be observed	N
+randomization	N
+pose a problem	N
+be helpful in	N
+play a role in	N
+beneficial	N
+provoke	F
+be useful	N
+facilitate	F
+it is well known that	F
+be poorly understood	F
+predictor	N
+present to	N
+suffer from	N
+be at high risk of	N
+increased risk of	N
+X-fold higher risk	N
+increase the risk of	N
+two-sided log-rank test	N
+approved by the ethics committee	N
+in patients with	N

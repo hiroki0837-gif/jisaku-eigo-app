@@ -1,0 +1,6 @@
+You are checking the NUANCE EXPLANATIONS of a Japanese learner's English app (user: Japanese cardiologist). Input JSONL: groups of near-synonyms shown on one card. Fields: id, title (Japanese concept), axis (scale labels, left→right), note (Japanese summary of how to choose), items: [[English word, Japanese nuance (, Japanese meaning)]...] in display order.
+Check: (1) each Japanese nuance correctly describes that English word's real usage/nuance and distinguishes it from the others (no factual errors about English, register, strength, collocation); (2) the note is accurate and consistent with the items; (3) if the group is a scale ("deg" ordering), the order is sensible (e.g. weak→strong, casual→formal) — report only clear misorderings; (4) natural Japanese, typos.
+Only flag real problems.
+Output ONLY changes as TSV, one per line: group id \t field \t corrected text \t reason (Japanese ≤30 chars)
+ where field is "note", or "item:<index>" (0-based; corrected Japanese nuance), or "meaning:<index>" (corrected 3rd element when present), or "order" with corrected text = the English words in the correct order joined by " | ".
+No header. Validate ids exist. Reply only with: groups checked, number of fixes, 3 examples.

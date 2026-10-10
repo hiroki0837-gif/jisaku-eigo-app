@@ -1,0 +1,15 @@
+{
+  "name": "jisaku-eigo-app",
+  "private": true,
+  "description": "自作英語学習アプリ（ニュアンス別英語クイズ・単語帳・例文・会話）",
+  "scripts": {
+    "test": "node tests/run-all.js",
+    "test:offline": "python3 scripts/build_pwa.py && node tests/offline.test.js",
+    "build": "python3 scripts/build_pwa.py",
+    "serve": "python3 scripts/build_pwa.py && cd dist && python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3",
+    "playwright": "^1.47.0"
+  }
+}
