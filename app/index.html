@@ -496,14 +496,17 @@ function findV(vs,k){return k?(vs.find(v=>vKey(v)===k)||vs.find(v=>v.name===k)||
 function vQual(v){const u=(v.voiceURI||"").toLowerCase();return /premium/.test(u)?"プレミアム":/enhanced/.test(u)?"拡張":/compact/.test(u)?"簡易":""}
 function pickVoice(){try{const vs=enVoices();voice=findV(vs,S.voice)||vs[0]||null;if(S.tab==="stats"&&typeof render==="function")render()}catch(e){}}
 if(TTS){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}[300,1000,2500].forEach(ms=>setTimeout(pickVoice,ms))}
+function sayText(t){return String(t).replace(/\[[^\]]*\]/g," ").replace(/\(([^)]*)\)/g,(m,x)=>/[~〜…]|\.\.\.|\bsb\b|\bsth\b/.test(x)?" ":m)
+  .replace(/[~〜]/g," ").replace(/\.\.\.|…/g,", ").replace(/\s\+\s|^\+\s|\s\+$/g," ").replace(/\btbh\b/i,"T B H").replace(/\bASAP\b/,"A S A P").replace(/V\/Q/g,"V Q").replace(/SPECT\/CT/g,"SPECT C T")
+  .replace(/\s+([,.;:!?])/g,"$1").replace(/([,;:])(\s*[,;:])+/g,"$1").replace(/^[\s,;:]+|[\s,;:]+$/g,"").replace(/\s{2,}/g," ")}
 function speak(text,slow,btn){
   if(!TTS)return;
   try{
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text.replace(/~/g,"someone").replace(/\btbh\b/i,"T B H").replace(/\bASAP\b/,"A S A P"));
+    const u=new SpeechSynthesisUtterance(sayText(text));
     if(voice){u.voice=voice;u.lang=voice.lang}else u.lang="en-US";u.rate=slow?0.75:(S.rate||1);u.pitch=1;
     document.querySelectorAll(".say .on").forEach(x=>x.classList.remove("on"));
-    btn.classList.add("on");u.onend=u.onerror=()=>btn.classList.remove("on");
+    if(btn){btn.classList.add("on");u.onend=u.onerror=()=>btn.classList.remove("on")}
     speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -938,7 +941,7 @@ function cHl(follow){let el=null;document.querySelectorAll(".cline").forEach(x=>
 function cPlay(idx,slow){if(!TTS||!idx.length)return;cStop();const q={idx,pos:0,slow};CQ=q;cNext(q)}
 function cNext(q){if(CQ!==q)return;if(q.pos>=q.idx.length||!document.querySelector(".cline")){CQ=null;CPL=-1;cHl();return}
   const L=cLines(cConf()),i=q.idx[q.pos],x=L[i];if(!x){CQ=null;return}
-  const sv=spkVoice(CSPK[x.s][1]),u=new SpeechSynthesisUtterance(x.en.replace(/V\/Q/g,"V Q").replace(/SPECT\/CT/g,"SPECT C T"));
+  const sv=spkVoice(CSPK[x.s][1]),u=new SpeechSynthesisUtterance(sayText(x.en));
   if(sv.v){u.voice=sv.v;u.lang=sv.v.lang}else u.lang="en-US";u.pitch=1;u.rate=q.slow?0.75:(S.rate||1);
   u.onstart=()=>{if(CQ!==q)return;CPL=i;cHl(q.idx.length>1)};
   let done=false;u.onend=u.onerror=()=>{if(done||CQ!==q)return;done=true;q.pos++;
@@ -1060,7 +1063,7 @@ document.addEventListener("click",e=>{
   ESEL.ai="";ewPaint()},true);
 ewEl.addEventListener("click",e=>{if(!ESEL)return;const c=e.target.closest("[data-ewx],[data-ewsay],[data-ewchk],[data-ewid],[data-ewai]");if(!c)return;
   if(c.dataset.ewx){ewClose();return}
-  if(c.dataset.ewsay){speak(ewPhrase(),c.dataset.ewsay==="2");return}
+  if(c.dataset.ewsay){speak(ewPhrase(),c.dataset.ewsay==="2",c);return}
   if(c.dataset.ewchk){ewToggle();return}
   if(c.dataset.ewai){ewAsk();return}
   if(c.dataset.ewid){const [a,b]=c.dataset.ewid.split(",").map(Number);ESEL.a=a;ESEL.b=b;ESEL.wait=false;ESEL.ai="";ewPaint()}});
@@ -1107,7 +1110,7 @@ function autoSpk(s){const vs=goodVoices();if(!vs.length)return voice;
 function spkVoice(s){if(s==="Y")return{v:voice,p:1};const vs=enVoices();
   const pick=s==="M"?S.vM:s==="W"?S.vW:"";const u=findV(vs,pick);return{v:u||autoSpk(s),p:1}}
 function playLines(d,from,to){if(!TTS)return;try{speechSynthesis.cancel()}catch(e){}
-  for(let i=from;i<=to;i++){const [s,en]=d.lines[i],sv=spkVoice(s);const u=new SpeechSynthesisUtterance(en);if(sv.v){u.voice=sv.v;u.lang=sv.v.lang}else u.lang="en-US";u.pitch=1;u.rate=S.rate||1;
+  for(let i=from;i<=to;i++){const [s,en]=d.lines[i],sv=spkVoice(s);const u=new SpeechSynthesisUtterance(sayText(en));if(sv.v){u.voice=sv.v;u.lang=sv.v.lang}else u.lang="en-US";u.pitch=1;u.rate=S.rate||1;
     u.onstart=()=>{S.d.playing=i;hlLine()};if(i===to)u.onend=u.onerror=()=>{S.d.playing=-1;hlLine()};try{speechSynthesis.speak(u)}catch(e){}}}
 function hlLine(){document.querySelectorAll(".dline").forEach(el=>el.classList.toggle("now",+el.dataset.i===S.d.playing))}
 function dLineHTML(d,i){const t=S.d,[s,en,ja]=d.lines[i],k=t.mode==="trans"?"D":"H",key=dkey(d,i,k),r=S.rec[key],op=t.open[i];
