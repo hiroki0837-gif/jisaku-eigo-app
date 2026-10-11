@@ -223,7 +223,8 @@ p.mine{margin:0;font-family:var(--en);color:var(--muted);font-size:15px}
 .cline .cbt{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
 .cbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(68px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:6px 8px;box-shadow:0 4px 16px rgba(0,0,0,.16);white-space:nowrap}
 .cbar .cbmain{font-weight:700;min-width:6.5em}
-.cline .cjb.on{background:var(--polite);color:#fff}
+.cjshow{align-self:flex-start;margin-top:4px;font-size:12px;color:var(--polite);font-weight:700;padding:2px 10px;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
+.cline .dl-body{display:flex;flex-direction:column;align-items:stretch}
 .cenb{display:block;width:100%;text-align:left;font-size:13px;color:var(--muted);padding:2px 0}
 .spk-C{background:var(--plain)}.spk-P{background:var(--formal)}.spk-A{background:var(--polite)}.spk-B{background:var(--casual)}
 /* 英単語タップ */
@@ -957,7 +958,7 @@ function cMin(c,pi){return Math.round(cLines(c).filter(x=>x.p===pi).reduce((a,x)
 function cSlide(c,n){const s=c.slides[n];if(!s)return "";
   return `<div class="cslide"><span class="csn">SLIDE ${n}</span><b lang="en">${esc(s[0])}</b>${s[1].length?`<ul lang="en">${s[1].map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`:""}</div>`}
 function cBarHTML(){const sw=(act,on,lab)=>`<button class="switch" data-act="${act}" role="switch" aria-checked="${!!on}"><i></i>${lab}</button>`;
-  return (CQ?`<button class="chipbtn cbmain" data-act="cstop">■ 停止</button>`:`<button class="chipbtn cbmain" data-act="cresume">▶ ${CLAST>=0?"続きから":"再生"}</button>`)+sw("cshow",CF.show,"英文")+sw("cja",CF.ja,"訳")}
+  return (CQ?`<button class="chipbtn cbmain" data-act="cstop">■ 停止</button>`:`<button class="chipbtn cbmain" data-act="cresume">▶ ${CLAST>=0?"続きから":"再生"}</button>`)+sw("cshow",CF.show,"英文")}
 function cBar(){const b=document.querySelector(".cbar");if(b)b.innerHTML=cBarHTML()}
 // 表示を切り替えても、いま見ている文の位置がずれないように描き直す
 function cRender(){let a=null,off=0;const ref=CPL>=0&&document.querySelector(`.cline[data-i="${CPL}"]`);
@@ -965,8 +966,8 @@ function cRender(){let a=null,off=0;const ref=CPL>=0&&document.querySelector(`.c
   if(a==null)for(const x of document.querySelectorAll(".cline")){const r=x.getBoundingClientRect();if(r.bottom>70){a=+x.dataset.i;off=r.top;break}}
   render();if(a!=null){const el=document.querySelector(`.cline[data-i="${a}"]`);if(el)window.scrollBy(0,el.getBoundingClientRect().top-off)}}
 function cLineHTML(x,i){
-  return `<div class="dline cline${CPL===i?" now":""}" data-i="${i}"><span class="spk spk-${x.s}">${CSPK[x.s][0]}</span><div class="dl-body">${CF.show||CEO[i]?`<p class="exen" lang="en">${esc(x.en)}</p>`:`<button class="dl-hidden cenb" data-act="cenline" data-i="${i}">（英文は非表示・タップで表示）</button>`}${CF.ja!==!!CJO[i]?`<p class="exja" data-en="${esc(x.en)}">${esc(x.ja)}</p>`:""}</div>
-  <div class="cbt"><button class="chipbtn pl" data-act="cplay" data-i="${i}" aria-label="${CF.cont?"ここから再生":"この文を再生"}">▶</button><button class="chipbtn pl" data-act="cslow" data-i="${i}" aria-label="この文をゆっくり再生">遅</button><button class="chipbtn pl cjb${CF.ja!==!!CJO[i]?" on":""}" data-act="cjline" data-i="${i}" aria-label="この文の訳を表示・非表示">訳</button></div></div>`}
+  return `<div class="dline cline${CPL===i?" now":""}" data-i="${i}"><span class="spk spk-${x.s}">${CSPK[x.s][0]}</span><div class="dl-body">${CF.show||CEO[i]?`<p class="exen" lang="en">${esc(x.en)}</p>`:`<button class="dl-hidden cenb" data-act="cenline" data-i="${i}">（英文は非表示・タップで表示）</button>`}${CF.ja!==!!CJO[i]?`<p class="exja" data-en="${esc(x.en)}">${esc(x.ja)}</p><button class="cjshow" data-act="cjline" data-i="${i}">訳を隠す</button>`:`<button class="cjshow" data-act="cjline" data-i="${i}">訳を表示</button>`}</div>
+  <div class="cbt"><button class="chipbtn pl" data-act="cplay" data-i="${i}" aria-label="${CF.cont?"ここから再生":"この文を再生"}">▶</button><button class="chipbtn pl" data-act="cslow" data-i="${i}" aria-label="この文をゆっくり再生">遅</button></div></div>`}
 function confView(){const c=cConf(),L=cLines(c);
   const sel=CONF.length>1?`<label class="vsel"><span>発表を選ぶ</span><select id="csel">${CONF.map((x,i)=>`<option value="${i}" ${i===CF.ci?"selected":""}>${esc(x.t)}</option>`).join("")}</select></label>`:"";
   const sw=(act,on,lab)=>`<button class="switch" data-act="${act}" role="switch" aria-checked="${!!on}"><i></i>${lab}</button>`;
@@ -975,7 +976,7 @@ function confView(){const c=cConf(),L=cLines(c);
    <p class="scene">発表（約${cMin(c,0)}分）と質疑応答（約${cMin(c,1)}分）の模擬台本です。<b>リスニング</b>は「英文」をオフにして聞き、あとで英文と訳で確かめます。<b>音読</b>は英文を出して ▶ で聞き、まねして読みます（「リピート練習」をオンにすると1文ごとに間があきます）。英文の単語をタップすると意味を調べて、あとで復習するチェックを付けられます。</p>
    <p class="sync" style="margin:0">${esc(c.ref)} をもとに作成した練習用の台本です。座長・質問者・発言内容は架空です。</p></section>`;
   const ctr=`<div class="row"><button class="chipbtn" data-act="cpart" data-p="-1">▶ 全部</button><button class="chipbtn" data-act="cpart" data-p="0">▶ 発表</button><button class="chipbtn" data-act="cpart" data-p="1">▶ 質疑</button><button class="chipbtn" data-act="cstop">■ 停止</button></div>
-   <div class="row">${sw("cshow",CF.show,"英文")}${sw("cja",CF.ja,"訳")}${sw("ccont",CF.cont,"▶で続きも再生")}${sw("crep",CF.rep,"リピート練習")}</div>`;
+   <div class="row">${sw("cshow",CF.show,"英文")}${sw("cja",CF.ja,"訳を全部表示")}${sw("ccont",CF.cont,"▶で続きも再生")}${sw("crep",CF.rep,"リピート練習")}</div>`;
   let body="";c.parts.forEach((p,pi)=>{body+=`<p class="sec">${esc(p.t)}（${p.goal}分・読み上げ約${cMin(c,pi)}分）</p><div class="dlist">`;
     L.forEach((x,i)=>{if(x.p!==pi)return;if(x.sl)body+=cSlide(c,x.sl);body+=cLineHTML(x,i)});body+=`</div>`});
   const sb=(e)=>sayBtns(e,"").replace(/▶ /g,"▶").replace(/>ゆっくり</,">遅<");
