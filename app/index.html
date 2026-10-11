@@ -1425,6 +1425,7 @@ function statSet(){
   <p class="sync" style="margin:0 2px">別の版（オンライン版⇄オフライン版）や別の端末に記録を移せます。「コピー」した文字を、移したい先の「貼り付けて復元」に貼ってください。今ある記録とまとめて、新しい方を残します。</p>
   <div class="row"><button class="chipbtn" data-act="bkcopy" style="flex:1">記録をコピー</button><button class="chipbtn" data-act="bkpaste" style="flex:1">貼り付けて復元</button></div>
   ${S.bk==="copy"?`<textarea id="bktext" rows="4" readonly>${esc(bkJSON())}</textarea><p class="uhelp">${S.bkmsg||"上の文字を全部選んでコピーしてください。"}</p>`:S.bk==="paste"?`<textarea id="bktext" rows="4" placeholder="ここにコピーした記録を貼り付け"></textarea><div class="row"><button class="chipbtn" data-act="bkrestore" style="flex:1;background:var(--polite);color:#fff;font-weight:700">復元する</button></div>${S.bkmsg?`<p class="uhelp">${esc(S.bkmsg)}</p>`:""}`:S.bkmsg?`<p class="uhelp">${esc(S.bkmsg)}</p>`:""}
+  ${window.APPV?`<p class="sec">アプリの更新</p><div class="row"><span class="sync" style="flex:1;align-self:center">いまの版：${esc(window.APPV)}</span><button class="chipbtn" data-act="appupd">最新版に更新</button></div><p class="sync" style="margin:0 2px">画面のいちばん上で下に引っ張っても更新できます。</p>`:""}
   <p class="sec">記録</p><div class="confirm">${S.confirmReset?`<span>記録をすべて消しますか？</span><button class="chipbtn" data-act="resetyes" style="color:var(--ng)">消す</button><button class="chipbtn" data-act="resetno">やめる</button>`:`<button class="danger" data-act="reset">記録をリセット</button>`}</div>
   <p class="sync" style="margin:0">記録の保存先：${S.sync}</p>`;
 }
@@ -1433,7 +1434,8 @@ applyTheme();
 document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;
   if(a==="sv"){S.sv=b.dataset.v;render();toQ()}
   else if(a==="wmore"){S.wlim=(S.wlim||50)+50;render()}
-  else if(a==="theme"){S.theme=b.dataset.v;applyTheme();saveLocal();render()}});
+  else if(a==="theme"){S.theme=b.dataset.v;applyTheme();saveLocal();render()}
+  else if(a==="appupd"){if(window.appUpdate){b.disabled=true;b.textContent="確認中…";window.appUpdate()}}});
 document.addEventListener("toggle",e=>{const t=e.target;if(t.classList&&t.classList.contains("pgrp")){S.popen=S.popen||{};S.popen[t.dataset.pg]=t.open}},true);
 
 
