@@ -948,7 +948,7 @@ function cNext(q){if(CQ!==q)return;if(q.pos>=q.idx.length||!document.querySelect
   const L=cLines(cConf()),i=q.idx[q.pos],x=L[i];if(!x){CQ=null;return}
   const sv=spkVoice(CSPK[x.s][1]),u=new SpeechSynthesisUtterance(sayText(x.en));
   if(sv.v){u.voice=sv.v;u.lang=sv.v.lang}else u.lang="en-US";u.pitch=1;u.rate=q.slow?0.75:(S.rate||1);
-  u.onstart=()=>{if(CQ!==q)return;CPL=i;CLAST=i;cHl(q.idx.length>1)};
+  u.onstart=()=>{if(CQ!==q)return;CPL=i;CLAST=i;cHl()};
   let done=false;u.onend=u.onerror=()=>{if(done||CQ!==q)return;done=true;q.pos++;
     const nx=L[q.idx[q.pos]],r=q.slow?0.75:(S.rate||1);
     const gap=CF.rep?Math.max(1500,cWords(x.en)*420/r):(nx&&nx.s!==x.s?700:350);
@@ -958,7 +958,7 @@ function cMin(c,pi){return Math.round(cLines(c).filter(x=>x.p===pi).reduce((a,x)
 function cSlide(c,n){const s=c.slides[n];if(!s)return "";
   return `<div class="cslide"><span class="csn">SLIDE ${n}</span><b lang="en">${esc(s[0])}</b>${s[1].length?`<ul lang="en">${s[1].map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`:""}</div>`}
 function cBarHTML(){const sw=(act,on,lab)=>`<button class="switch" data-act="${act}" role="switch" aria-checked="${!!on}"><i></i>${lab}</button>`;
-  return (CQ?`<button class="chipbtn cbmain" data-act="cstop">■ 停止</button>`:`<button class="chipbtn cbmain" data-act="cresume">▶ ${CLAST>=0?"続きから":"再生"}</button>`)}
+  return (CQ?`<button class="chipbtn cbmain" data-act="cstop">■ 停止</button>`:`<button class="chipbtn cbmain" data-act="cresume">▶ ${CLAST>=0?"続きから":"再生"}</button>`)+(CQ||CLAST>=0?`<button class="chipbtn" data-act="cgo">↕ 今の文へ</button>`:"")}
 function cBar(){const b=document.querySelector(".cbar");if(b)b.innerHTML=cBarHTML()}
 // 表示を切り替えても、いま見ている文の位置がずれないように描き直す
 function cRender(){let a=null,off=0;const ref=CPL>=0&&document.querySelector(`.cline[data-i="${CPL}"]`);
@@ -991,6 +991,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(
   else if(a==="cstop")cStop();
   else if(a==="cshow"||a==="cja"||a==="ccont"||a==="crep"){const k={cshow:"show",cja:"ja",ccont:"cont",crep:"rep"}[a];CF[k]=!CF[k];if(a==="cja")CJO={};if(a==="cshow")CEO={};cfSave();cRender()}
   else if(a==="cresume"){const L=cLines(cConf()),st=Math.max(0,CLAST);cPlay(L.map((_,j)=>j).filter(j=>j>=st))}
+  else if(a==="cgo"){const i=CPL>=0?CPL:CLAST,el=document.querySelector(`.cline[data-i="${i}"]`);if(el)try{el.scrollIntoView({block:"center"})}catch(e){el.scrollIntoView()}}
   else if(a==="cjline"){const i=+b.dataset.i;CJO[i]=!CJO[i];cRender()}
   else if(a==="cenline"){CEO[+b.dataset.i]=true;cRender()}});
 
@@ -1072,7 +1073,7 @@ async function ewAsk(){if(!SMP||!ESEL)return;const q=ESEL,ph=ewPhrase();q.aiw=tr
   q.aiw=false;if(ESEL===q)drawEw()}
 document.addEventListener("click",e=>{
   if(e.target.closest("[data-tab]")){if(CQ)cStop();ewClose()}
-  const ba=e.target.closest("[data-act]");if(CQ&&ba&&!/^(cplay|cslow|cpart|cstop|cshow|cja|ccont|crep|cresume|cjline|cenline)$/.test(ba.dataset.act))cStop();
+  const ba=e.target.closest("[data-act]");if(CQ&&ba&&!/^(cplay|cslow|cpart|cstop|cshow|cja|ccont|crep|cresume|cjline|cenline|cgo)$/.test(ba.dataset.act))cStop();
   const w=e.target.closest(".ew");if(!w)return;const p=w.closest("p.exen");if(!p)return;e.stopPropagation();e.preventDefault();
   const i=+w.dataset.ew,en=p.dataset.ewt;
   if(!ESEL||ESEL.en!==en||!ESEL.wait||ESEL.a===i){ESEL={p,en,a:i,b:i,wait:true}}else{ESEL.b=i;ESEL.wait=false}
