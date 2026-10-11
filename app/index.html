@@ -1443,7 +1443,7 @@ function bkJSON(){return JSON.stringify({app:"jisaku-eigo",v:1,at:Date.now(),rec
 function bkRestore(txt){let d;try{d=JSON.parse(String(txt).trim())}catch(e){return "読み込めませんでした。コピーした文字を全部貼り付けてください。"}
   if(!d||d.app!=="jisaku-eigo"||!d.rec)return "このアプリの記録ではないようです。";
   let n=0;for(const k in d.rec){const r=d.rec[k],l=S.rec[k];if(!l||(r.t||0)>(l.t||0)){S.rec[k]=r;n++}}
-  const um=new Map((S.unk||[]).map(u=>[u.id,u]));(d.unk||[]).forEach(u=>{const l=um.get(u.id);if(!l||(u.t||0)>(l.t||0))um.set(u.id,u)});S.unk=[...um.values()];mergeWk(d.wk);
+  const um=new Map((S.unk||[]).map(u=>[u.id,u]));(d.unk||[]).forEach(u=>{const l=um.get(u.id);if(!l||(u.t||0)>(l.t||0))um.set(u.id,u)});S.unk=[...um.values()];mergeWk(d.wk);if(d.hide!=null)S.hideDone=!!d.hide;if(d.tdb)S.tdb=d.tdb;if(d.exq===false)S.exq=false;
   const ids=new Set((S.my||[]).map(x=>x.id));S.my=(S.my||[]).concat((d.my||[]).filter(x=>!ids.has(x.id)));
   const mk=S.marks||{};for(const v in (d.marks||{})){if(!mk[v]||(d.marks[v].t||0)>(mk[v].t||0))mk[v]=d.marks[v]}S.marks=mk;
   save();return `復元しました（${n}件の記録を更新）。`}
