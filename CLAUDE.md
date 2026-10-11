@@ -81,7 +81,7 @@ npm run test:offline        # Chromium でオフライン動作を確認（playw
 ## 変更したら
 1. `npm test`（全部「OK」になること）
 2. 必要なら `npm run serve` でスマホ幅（390px）表示を確認
-3. コミットして push（GitHub Pages に自動反映。端末側は次回起動時に Service Worker が新版を取得）
+3. コミットして push（GitHub Pages に自動反映。端末側は画面のいちばん上で下に引っ張ると新版を取得して読み込み直す。`build_pwa.py` の `PTR`）
 
 ## 既知の点・TODO
 - 医学論文の見出し語は本の表記どおり（例: "be candidate for", "be followed-up"）。正しい形は例文とメモで示している。
