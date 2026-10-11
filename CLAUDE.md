@@ -23,11 +23,12 @@ npm run test:offline        # Chromium でオフライン動作を確認（playw
 | フレーズ | learn | `learnView` | `Q` の4段階（カジュアル→フォーマル）ラダー |
 | 似た言葉 | pos | `posView`→`uniView` | `UNI`（4段階ラダー＋似ている言葉＋言い換え＋時の表現を統合） |
 | 単語帳 | toeic | `cardView` (`tList`,`tCard`,`clusterCard`) | デッキ: mix(TOEIC＋TOEFL＋論文) / toeic / idiom(TOEFL熟語) / med(医学論文) / kobun(構文)。英→日・日→英。日→英は似た語を1枚に（クラスター） |
-| 例文・会話 | example | `exampleView` (`wordExView`,`convView`) | 例文の日→英クイズ（`EXPOOL`）、TOEIC Part3/4風会話 |
-| 復習 | review | `reviewView` | まちがえた問題 / わからない表現（例文の日本語をタップしてメモ） |
+| 例文・会話 | example | `exampleView` (`wordExView`,`convView`,`confView`) | 例文の日→英クイズ（`EXPOOL`）、TOEIC Part3/4風会話、学会（模擬発表7分＋質疑3分。リスニング・音読） |
+| 復習 | review | `reviewView` | まちがえた問題 / わからない表現（例文の日本語をタップしてメモ） / チェックした単語（`wkView`） |
 | 記録 | stats | `statsView` | 概要 / 苦手な単語 / フレーズ一覧 / 設定（明るさ・音声・バックアップ・リセット） |
 
 - 描画は `render()` が `app.innerHTML` を毎回作り直す方式。クリックは `document` への委譲で `data-act` 属性を見て処理（同じ `data-act` を複数のリスナーが見るので、新しい act 名は既存と重複させない）。
+- 英単語タップ: `render()` の最後の `decorateEn()` が全タブの `p.exen` の英単語を `.ew` に分割。タップで `#ewsheet`（意味・熟語候補・チェック・辞書サイト）。意味はアプリ内データから作る `DICT`（`dictBuild`/`dictLook`/`idiomsAt`）。クリックは capture で処理するので `.ew` のタップは他の `data-act` に届かない。
 - ページ移動後のスクロールは `toQ()`（設定ボタン群の直下＝問題の頭へ）。タブ切替は `S.scr[tab]` で位置を復元。
 
 ## 状態と保存
@@ -40,7 +41,7 @@ npm run test:offline        # Chromium でオフライン動作を確認（playw
   - `X:<exampleId>` 例文クイズ（`L:`/`N:`/`T:`/`I:`/`M:`/`K:` + id）
   - `D:`/`H:` 会話（英訳/書き取り）
   - 値は `{o,x,last,t}`（正解数・不正解数・最後・時刻）
-- その他: `S.marks`（付箋）, `S.unk`（わからない表現、削除は `del:true` の墓標）, `S.my`（マイ例文）, `S.hideDone`（全問正解を出さない）, `S.tdb`（全問正解の条件 `w`=単語だけ / `b`=単語と例文）, `S.exq`（例文を英訳クイズで出す）, `S.theme`（light/dark/auto）。
+- その他: `S.wk`（チェックした単語 `{id,w,mean,ai,sent,ja,src,memo,done,t,c,del}`、保存・同期・バックアップ対象）, `S.marks`（付箋）, `S.unk`（わからない表現、削除は `del:true` の墓標）, `S.my`（マイ例文）, `S.hideDone`（全問正解を出さない）, `S.tdb`（全問正解の条件 `w`=単語だけ / `b`=単語と例文）, `S.exq`（例文を英訳クイズで出す）, `S.theme`（light/dark/auto）。
 - 記録の移行は「記録 → 設定 → 記録をコピー / 貼り付けて復元」（`bkJSON`/`bkRestore`、新しい方を残してマージ）。
 
 ## データ定数（app/index.html 内）
@@ -62,6 +63,7 @@ npm run test:offline        # Chromium でオフライン動作を確認（playw
 | `REG` | `{word: "C"|"N"|"F"}` カジュアル/ふつう/フォーマル |
 | `PAPER` | 論文タグの語（小文字Set、MEDは自動追加） |
 | `DLG` | 会話23本 `{id,t,lines:[[話者,英,日]],kp}` |
+| `CONF` | 学会の模擬発表 `{id,t,te,ref,parts:[{t,goal,lines:[[話者C/P/A/B,英,日,スライド番号?]]}],slides,kp,gl}`。論文の数値に合わせ、文章はオリジナル。設定は localStorage `jisaku-conf-v1` |
 
 - JSON で書かれている定数は `scripts/datalib.py` の `load()/save()` で安全に読み書きできる（`</` は `<\/` にエスケープして保存）。`Q`/`POS` は JS リテラルなので文字列置換で編集する。
 
