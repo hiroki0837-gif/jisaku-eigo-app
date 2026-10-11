@@ -958,7 +958,7 @@ function cMin(c,pi){return Math.round(cLines(c).filter(x=>x.p===pi).reduce((a,x)
 function cSlide(c,n){const s=c.slides[n];if(!s)return "";
   return `<div class="cslide"><span class="csn">SLIDE ${n}</span><b lang="en">${esc(s[0])}</b>${s[1].length?`<ul lang="en">${s[1].map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`:""}</div>`}
 function cBarHTML(){const sw=(act,on,lab)=>`<button class="switch" data-act="${act}" role="switch" aria-checked="${!!on}"><i></i>${lab}</button>`;
-  return (CQ?`<button class="chipbtn cbmain" data-act="cstop">■ 停止</button>`:`<button class="chipbtn cbmain" data-act="cresume">▶ ${CLAST>=0?"続きから":"再生"}</button>`)+sw("cshow",CF.show,"英文")}
+  return (CQ?`<button class="chipbtn cbmain" data-act="cstop">■ 停止</button>`:`<button class="chipbtn cbmain" data-act="cresume">▶ ${CLAST>=0?"続きから":"再生"}</button>`)}
 function cBar(){const b=document.querySelector(".cbar");if(b)b.innerHTML=cBarHTML()}
 // 表示を切り替えても、いま見ている文の位置がずれないように描き直す
 function cRender(){let a=null,off=0;const ref=CPL>=0&&document.querySelector(`.cline[data-i="${CPL}"]`);
