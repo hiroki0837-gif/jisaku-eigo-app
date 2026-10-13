@@ -939,20 +939,29 @@ const CLC={};
 function cLines(c){return CLC[c.id]||(CLC[c.id]=c.parts.flatMap((p,pi)=>p.lines.map(l=>({p:pi,s:l[0],en:l[1],ja:l[2],sl:l[3]||0}))))}
 const cWords=s=>(String(s).match(/[A-Za-z0-9][A-Za-z0-9'’.-]*/g)||[]).length;
 let CQ=null,CPL=-1,CLAST=-1,CJO={},CEO={};
+/* 再生中は画面を消さない（iPhone は画面が消えると読み上げが止まるため） */
+let WL=null;
+function wlOn(){try{if(WL||!("wakeLock" in navigator)||document.hidden)return;navigator.wakeLock.request("screen").then(w=>{WL=w;w.addEventListener("release",()=>{if(WL===w)WL=null})}).catch(()=>{})}catch(e){}}
+function wlOff(){try{if(WL)WL.release()}catch(e){}WL=null}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)return;
+  if(CQ||S.d.playing>=0)wlOn();
+  if(CQ)setTimeout(()=>{const q=CQ;if(!q)return;let busy=false;try{busy=speechSynthesis.speaking||speechSynthesis.pending}catch(e){}
+    if(q.hold||!busy){q.hold=false;q.gen++;try{speechSynthesis.cancel()}catch(e){}cNext(q)}},500)});
 function cConf(){return CONF[CF.ci]||CONF[0]}
-function cStop(){CQ=null;CPL=-1;try{if(TTS)speechSynthesis.cancel()}catch(e){}cHl();cBar()}
+function cStop(){CQ=null;CPL=-1;try{if(TTS)speechSynthesis.cancel()}catch(e){}cHl();cBar();wlOff()}
 function cHl(follow){let el=null;document.querySelectorAll(".cline").forEach(x=>{const on=+x.dataset.i===CPL;x.classList.toggle("now",on);if(on)el=x});
   if(follow&&el)try{el.scrollIntoView({block:"center",behavior:"smooth"})}catch(e){}}
-function cPlay(idx,slow){if(!TTS||!idx.length)return;cStop();const q={idx,pos:0,slow};CQ=q;cBar();cNext(q)}
-function cNext(q){if(CQ!==q)return;if(q.pos>=q.idx.length||!document.querySelector(".cline")){CQ=null;CPL=-1;cHl();cBar();return}
+function cPlay(idx,slow){if(!TTS||!idx.length)return;cStop();const q={idx,pos:0,slow,gen:0};CQ=q;cBar();wlOn();cNext(q)}
+function cNext(q){if(CQ!==q)return;if(q.pos>=q.idx.length||!document.querySelector(".cline")){CQ=null;CPL=-1;cHl();cBar();wlOff();return}
+  const g=++q.gen;
   const L=cLines(cConf()),i=q.idx[q.pos],x=L[i];if(!x){CQ=null;return}
   const sv=spkVoice(CSPK[x.s][1]),u=new SpeechSynthesisUtterance(sayText(x.en));
   if(sv.v){u.voice=sv.v;u.lang=sv.v.lang}else u.lang="en-US";u.pitch=1;u.rate=q.slow?0.75:(S.rate||1);
   u.onstart=()=>{if(CQ!==q)return;CPL=i;CLAST=i;cHl()};
-  let done=false;u.onend=u.onerror=()=>{if(done||CQ!==q)return;done=true;q.pos++;
+  let done=false;u.onend=u.onerror=()=>{if(done||CQ!==q||q.gen!==g)return;if(document.hidden){q.hold=true;return}done=true;q.pos++;
     const nx=L[q.idx[q.pos]],r=q.slow?0.75:(S.rate||1);
     const gap=CF.rep?Math.max(1500,cWords(x.en)*420/r):(nx&&nx.s!==x.s?700:350);
-    setTimeout(()=>cNext(q),q.pos>=q.idx.length?0:gap)};
+    setTimeout(()=>{if(q.gen===g)cNext(q)},q.pos>=q.idx.length?0:gap)};
   try{speechSynthesis.speak(u)}catch(e){CQ=null}}
 function cMin(c,pi){return Math.round(cLines(c).filter(x=>x.p===pi).reduce((a,x)=>a+cWords(x.en),0)/130*10)/10}
 function cSlide(c,n){const s=c.slides[n];if(!s)return "";
@@ -973,7 +982,7 @@ function confView(){const c=cConf(),L=cLines(c);
   const sw=(act,on,lab)=>`<button class="switch" data-act="${act}" role="switch" aria-checked="${!!on}"><i></i>${lab}</button>`;
   const head=`<section class="concept"><p class="jp" style="font-size:19px">学会発表を聞いて、音読しよう</p>
    <p class="exen" lang="en" style="font-size:15px">${esc(c.te)}</p>
-   <p class="scene">発表（約${cMin(c,0)}分）と質疑応答（約${cMin(c,1)}分）の模擬台本です。<b>リスニング</b>は「英文」をオフにして聞き、あとで英文と訳で確かめます。<b>音読</b>は英文を出して ▶ で聞き、まねして読みます（「リピート練習」をオンにすると1文ごとに間があきます）。英文の単語をタップすると意味を調べて、あとで復習するチェックを付けられます。</p>
+   <p class="scene">発表（約${cMin(c,0)}分）と質疑応答（約${cMin(c,1)}分）の模擬台本です。<b>リスニング</b>は「英文」をオフにして聞き、あとで英文と訳で確かめます。<b>音読</b>は英文を出して ▶ で聞き、まねして読みます（「リピート練習」をオンにすると1文ごとに間があきます）。英文の単語をタップすると意味を調べて、あとで復習するチェックを付けられます。再生中は画面が自動で消えないようにしています（iPhone は画面を消すと読み上げが止まります。アプリに戻ると止まった文から続きます）。</p>
    <p class="sync" style="margin:0">${esc(c.ref)} をもとに作成した練習用の台本です。座長・質問者・発言内容は架空です。</p></section>`;
   const ctr=`<div class="row"><button class="chipbtn" data-act="cpart" data-p="-1">▶ 全部</button><button class="chipbtn" data-act="cpart" data-p="0">▶ 発表</button><button class="chipbtn" data-act="cpart" data-p="1">▶ 質疑</button><button class="chipbtn" data-act="cstop">■ 停止</button></div>
    <div class="row">${sw("cshow",CF.show,"英文")}${sw("cja",CF.ja,"訳を全部表示")}${sw("ccont",CF.cont,"▶で続きも再生")}${sw("crep",CF.rep,"リピート練習")}</div>`;
@@ -1126,9 +1135,9 @@ function autoSpk(s){const vs=goodVoices();if(!vs.length)return voice;
   if(s==="M")return mal[0]||voice;if(s==="M2")return mal[1]||mal[0]||voice;if(s==="W2")return fem[1]||fem[0]||voice;return fem[0]||voice}
 function spkVoice(s){if(s==="Y")return{v:voice,p:1};const vs=enVoices();
   const pick=s==="M"?S.vM:s==="W"?S.vW:"";const u=findV(vs,pick);return{v:u||autoSpk(s),p:1}}
-function playLines(d,from,to){if(!TTS)return;try{speechSynthesis.cancel()}catch(e){}
+function playLines(d,from,to){if(!TTS)return;try{speechSynthesis.cancel()}catch(e){}wlOn();
   for(let i=from;i<=to;i++){const [s,en]=d.lines[i],sv=spkVoice(s);const u=new SpeechSynthesisUtterance(sayText(en));if(sv.v){u.voice=sv.v;u.lang=sv.v.lang}else u.lang="en-US";u.pitch=1;u.rate=S.rate||1;
-    u.onstart=()=>{S.d.playing=i;hlLine()};if(i===to)u.onend=u.onerror=()=>{S.d.playing=-1;hlLine()};try{speechSynthesis.speak(u)}catch(e){}}}
+    u.onstart=()=>{S.d.playing=i;hlLine()};if(i===to)u.onend=u.onerror=()=>{if(document.hidden)return;S.d.playing=-1;hlLine();wlOff()};try{speechSynthesis.speak(u)}catch(e){}}}
 function hlLine(){document.querySelectorAll(".dline").forEach(el=>el.classList.toggle("now",+el.dataset.i===S.d.playing))}
 function dLineHTML(d,i){const t=S.d,[s,en,ja]=d.lines[i],k=t.mode==="trans"?"D":"H",key=dkey(d,i,k),r=S.rec[key],op=t.open[i];
   const m=r?`<span class="mark ${r.last==="o"?"ok":"ng"}">${r.last==="o"?"○":"×"}</span>`:"";
@@ -1165,7 +1174,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(
   else if(a==="vtest"){if(TTS){try{speechSynthesis.cancel()}catch(e){}const sv=spkVoice(b.dataset.s);const u=new SpeechSynthesisUtterance(b.dataset.s==="M"?"Hi, this is Mark from the sales team. I'll call you back this afternoon.":"Thank you for calling. Your order is ready to be picked up.");u.lang="en-US";if(sv.v)u.voice=sv.v;u.rate=S.rate||1;try{speechSynthesis.speak(u)}catch(e){}}}
   else if(a==="dplay"){playLines(d,+b.dataset.i,+b.dataset.i)}
   else if(a==="dall"){playLines(d,0,d.lines.length-1)}
-  else if(a==="dstop"){try{speechSynthesis.cancel()}catch(e){}t.playing=-1;hlLine()}
+  else if(a==="dstop"){try{speechSynthesis.cancel()}catch(e){}t.playing=-1;hlLine();wlOff()}
   else if(a==="dshow"){t.show=!t.show;saveLocal();render()}
   else if(a==="dja"){t.ja=!t.ja;saveLocal();render()}
   else if(a==="dopen"){t.open[b.dataset.i]=true;render()}
